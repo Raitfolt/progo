@@ -2,28 +2,20 @@ package main
 
 import (
 	"fmt"
-	"strings"
-	"unicode"
+	"regexp"
 )
 
+func getSubstring(s string, indices []int) string {
+	return string(s[indices[0]:indices[1]])
+}
+
 func main() {
-	product := "Kayak"
+	pattern := regexp.MustCompile("A (?P<type>[A-z]*) for (?P<capacity>[A-z]*) person")
 
-	for _, char := range product {
-		fmt.Println(string(char), "Upper case:", unicode.IsUpper(char))
-	}
+	description := "Kayak. A boat for one person."
 
-	fmt.Println("Contains:", strings.Contains(product, "yak"))
-	fmt.Println("ContainsAny:", strings.ContainsAny(product, "abc"))
-	fmt.Println("ContainsRune:", strings.ContainsRune(product, 'K'))
-	fmt.Println("EqualFold:", strings.EqualFold(product, "KAYAK"))
-	fmt.Println("HasPrefix:", strings.HasPrefix(product, "Ka"))
-	fmt.Println("HasSuffix:", strings.HasSuffix(product, "yak"))
-
-	kayak := "KaYaK iS gOoD"
-	fmt.Println(kayak, "to lower:", strings.ToLower(kayak))
-	fmt.Println(kayak, "to upper:", strings.ToUpper(kayak))
-	fmt.Println(kayak, "title:", strings.Title(kayak))
-	fmt.Println(kayak, "to title:", strings.ToTitle(kayak))
-
+	replaced := pattern.ReplaceAllStringFunc(description, func(s string) string {
+		return "This is the replacement content"
+	})
+	fmt.Println(replaced)
 }
