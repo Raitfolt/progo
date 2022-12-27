@@ -12,24 +12,40 @@ func PrintTime(label string, t *time.Time) {
 	//Printfln("%s: Day: %v Month: %v Year: %v", label, t.Day(), t.Month(), t.Year())
 }
 
+func writeToChannel(channel chan<- string) {
+
+	Printfln("Waiting for initial duration...")
+	_ = <-time.After(time.Second * 2)
+	Printfln("Initial duration elapsed.")
+	names := []string{"Alice", "Bob", "Charlie", "Dora"}
+	for _, name := range names {
+		channel <- name
+		time.Sleep(time.Second * 3)
+	}
+	close(channel)
+}
+
 func main() {
-	toYears := func(d time.Duration) int {
-		return int(d.Hours() / (24 * 365))
+	nameChannel := make(chan string)
+
+	go writeToChannel(nameChannel)
+
+	channelOpen := true
+	for channelOpen {
+		select {
+		case name, ok := <-nameChannel:
+			if !ok {
+				channelOpen = false
+				break
+			} else {
+				Printfln("Read name: %v", name)
+			}
+		case <-time.After(time.Second * 2):
+			Printfln("Timeout")
+		}
 	}
 
-	future := time.Date(2051, 0, 0, 0, 0, 0, 0, time.Local)
-	past := time.Date(1965, 0, 0, 0, 0, 0, 0, time.Local)
-
-	Printfln("Future: %v", toYears(time.Until(future)))
-	Printfln("Past: %v", toYears(time.Since(past)))
-
-	d, err := time.ParseDuration("1h30m")
-	if err == nil {
-		Printfln("Hours: %v", d.Hours())
-		Printfln("Minutes: %v", d.Minutes())
-		Printfln("Seconds: %v", d.Seconds())
-		Printfln("Milliseconds: %v", d.Milliseconds())
-	} else {
-		fmt.Println(err.Error())
+	for name := range nameChannel {
+		Printfln("Read name: %v", name)
 	}
 }
