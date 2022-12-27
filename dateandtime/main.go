@@ -13,18 +13,18 @@ func PrintTime(label string, t *time.Time) {
 }
 
 func main() {
-	t, err := time.Parse(time.RFC822, "09 Jun 95 04:56 BST")
-	if err == nil {
-		Printfln("After: %v", t.After(time.Now()))
-		Printfln("Round: %v", t.Round(time.Hour))
-		Printfln("Truncate: %v", t.Truncate(time.Hour))
-		Printfln("In: %v", t.In(time.Local))
-	} else {
-		fmt.Println(err.Error())
-	}
+	var d time.Duration = time.Hour + (30 * time.Minute)
 
-	t1, _ := time.Parse(time.RFC822Z, "09 Jun 95 04:59 +0100")
-	t2, _ := time.Parse(time.RFC822Z, "08 Jun 95 23:59 -0400")
-	Printfln("Equal Method: %v", t1.Equal(t2))
-	Printfln("Equality Operator: %v", t1 == t2)
+	Printfln("Hours: %v", d.Hours())
+	Printfln("Minutes: %v", d.Minutes())
+	Printfln("Seconds: %v", d.Seconds())
+	Printfln("Milliseconds: %v", d.Milliseconds())
+
+	rounded := d.Round(time.Hour)
+	Printfln("Rounded Hours: %v", rounded.Hours())
+	Printfln("Rounded Mins: %v", rounded.Minutes())
+
+	trunc := d.Truncate(time.Hour)
+	Printfln("Truncated Hours: %v", trunc.Hours())
+	Printfln("Rounded Mins: %v", trunc.Minutes())
 }
