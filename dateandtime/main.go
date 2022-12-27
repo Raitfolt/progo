@@ -13,18 +13,23 @@ func PrintTime(label string, t *time.Time) {
 }
 
 func main() {
-	var d time.Duration = time.Hour + (30 * time.Minute)
+	toYears := func(d time.Duration) int {
+		return int(d.Hours() / (24 * 365))
+	}
 
-	Printfln("Hours: %v", d.Hours())
-	Printfln("Minutes: %v", d.Minutes())
-	Printfln("Seconds: %v", d.Seconds())
-	Printfln("Milliseconds: %v", d.Milliseconds())
+	future := time.Date(2051, 0, 0, 0, 0, 0, 0, time.Local)
+	past := time.Date(1965, 0, 0, 0, 0, 0, 0, time.Local)
 
-	rounded := d.Round(time.Hour)
-	Printfln("Rounded Hours: %v", rounded.Hours())
-	Printfln("Rounded Mins: %v", rounded.Minutes())
+	Printfln("Future: %v", toYears(time.Until(future)))
+	Printfln("Past: %v", toYears(time.Since(past)))
 
-	trunc := d.Truncate(time.Hour)
-	Printfln("Truncated Hours: %v", trunc.Hours())
-	Printfln("Rounded Mins: %v", trunc.Minutes())
+	d, err := time.ParseDuration("1h30m")
+	if err == nil {
+		Printfln("Hours: %v", d.Hours())
+		Printfln("Minutes: %v", d.Minutes())
+		Printfln("Seconds: %v", d.Seconds())
+		Printfln("Milliseconds: %v", d.Milliseconds())
+	} else {
+		fmt.Println(err.Error())
+	}
 }
