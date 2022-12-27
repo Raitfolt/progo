@@ -13,27 +13,18 @@ func PrintTime(label string, t *time.Time) {
 }
 
 func main() {
-	layout := "02 Jan 06 15:04"
-	date := "09 Jun 95 19:30"
-
-	london, lonerr := time.LoadLocation("Europe/London")
-	newyork, nyerr := time.LoadLocation("America/New_York")
-	local, _ := time.LoadLocation("Local")
-	fixZone := time.FixedZone("EDT", -4*60*60)
-
-	if lonerr == nil && nyerr == nil {
-		nolocation, _ := time.Parse(layout, date)
-		londonTime, _ := time.ParseInLocation(layout, date, london)
-		newyorkTime, _ := time.ParseInLocation(layout, date, newyork)
-		localTime, _ := time.ParseInLocation(layout, date, local)
-		fixTime, _ := time.ParseInLocation(layout, date, fixZone)
-
-		PrintTime("No location:", &nolocation)
-		PrintTime("London:", &londonTime)
-		PrintTime("New York:", &newyorkTime)
-		PrintTime("Local:", &localTime)
-		PrintTime("Fixed:", &fixTime)
+	t, err := time.Parse(time.RFC822, "09 Jun 95 04:56 BST")
+	if err == nil {
+		Printfln("After: %v", t.After(time.Now()))
+		Printfln("Round: %v", t.Round(time.Hour))
+		Printfln("Truncate: %v", t.Truncate(time.Hour))
+		Printfln("In: %v", t.In(time.Local))
 	} else {
-		fmt.Println(lonerr.Error(), nyerr.Error())
+		fmt.Println(err.Error())
 	}
+
+	t1, _ := time.Parse(time.RFC822Z, "09 Jun 95 04:59 +0100")
+	t2, _ := time.Parse(time.RFC822Z, "08 Jun 95 23:59 -0400")
+	Printfln("Equal Method: %v", t1.Equal(t2))
+	Printfln("Equality Operator: %v", t1 == t2)
 }
