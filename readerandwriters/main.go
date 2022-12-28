@@ -29,11 +29,15 @@ func processData2(reader io.Reader, writer io.Writer) {
 }
 
 func main() {
-	r1 := strings.NewReader("Kayak")
-	r2 := strings.NewReader("Lifejacket")
-	r3 := strings.NewReader("Canoe")
+	var w1 strings.Builder
+	var w2 strings.Builder
+	var w3 strings.Builder
 
-	concatReader := io.MultiReader(r1, r2, r3)
+	combinedWriter := io.MultiWriter(&w1, &w2, &w3)
 
-	ConsumeData(concatReader)
+	GenerateData(combinedWriter)
+
+	Printfln("Writer #1: %v", w1.String())
+	Printfln("Writer #2: %v", w2.String())
+	Printfln("Writer #3: %v", w3.String())
 }
