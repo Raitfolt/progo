@@ -12,20 +12,20 @@ func PrintTime(label string, t *time.Time) {
 	//Printfln("%s: Day: %v Month: %v Year: %v", label, t.Day(), t.Month(), t.Year())
 }
 
-//648
-
 func writeToChannel(nameChannel chan<- string) {
 	names := []string{"Alice", "Bob", "Charlie", "Dora"}
 
-	tickChannel := time.Tick(time.Second)
+	ticker := time.NewTicker(time.Second)
 	index := 0
 
 	for {
-		<-tickChannel
+		<-ticker.C
 		nameChannel <- names[index]
 		index++
 		if index == len(names) {
-			index = 0
+			ticker.Stop()
+			close(nameChannel)
+			break
 		}
 	}
 }
