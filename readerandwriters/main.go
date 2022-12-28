@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"io"
 	"strings"
 )
@@ -30,14 +29,11 @@ func processData2(reader io.Reader, writer io.Writer) {
 }
 
 func main() {
-	r := strings.NewReader("Kayak")
-	var builder strings.Builder
-	processData2(r, &builder)
-	Printfln("String Builder contents: %s", builder.String())
+	r1 := strings.NewReader("Kayak")
+	r2 := strings.NewReader("Lifejacket")
+	r3 := strings.NewReader("Canoe")
 
-	fmt.Println("---------------------------------")
+	concatReader := io.MultiReader(r1, r2, r3)
 
-	pipeReader, pipeWriter := io.Pipe()
-	go GenerateData(pipeWriter)
-	ConsumeData(pipeReader)
+	ConsumeData(concatReader)
 }
