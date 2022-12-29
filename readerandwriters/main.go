@@ -35,11 +35,6 @@ func main() {
 
 	concatReader := io.MultiReader(r1, r2, r3)
 
-	var writer strings.Builder
-	teeReader := io.TeeReader(concatReader, &writer)
-
-	ConsumeData(teeReader)
-	Printfln("Echo data: %v", writer.String())
+	limited := io.LimitReader(concatReader, 5)
+	ConsumeData(limited)
 }
-
-//669
