@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"io"
 	"strings"
 )
@@ -29,12 +30,23 @@ func processData2(reader io.Reader, writer io.Writer) {
 }
 
 func main() {
-	r1 := strings.NewReader("Kayak")
-	r2 := strings.NewReader("Lifejacket")
-	r3 := strings.NewReader("Canoe")
+	text := "It was a boat. A small boat."
+	var reader io.Reader = NewCustomReader(strings.NewReader(text))
+	var writer strings.Builder
+	slice := make([]byte, 5)
 
-	concatReader := io.MultiReader(r1, r2, r3)
+	buffered := bufio.NewReader(reader)
 
-	limited := io.LimitReader(concatReader, 5)
-	ConsumeData(limited)
+	for {
+		count, err := buffered.Read(slice)
+		if count > 0 {
+			Printfln("Buffer size: %v, buffered: %v", buffered.Size(), buffered.Buffered())
+			writer.Write(slice[0:count])
+		}
+		if err != nil {
+			break
+		}
+	}
+
+	Printfln("Read data: %v", writer.String())
 }
