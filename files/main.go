@@ -12,7 +12,8 @@ func main() {
 			cheapProducts = append(cheapProducts, p)
 		}
 	}
-	file, err := os.OpenFile("cheap.json", os.O_WRONLY|os.O_CREATE, 0666)
+	//file, err := os.OpenFile("cheap.json", os.O_WRONLY|os.O_CREATE, 0666)
+	file, err := os.CreateTemp(".", "tempfile-*.json")
 	if err == nil {
 		defer file.Close()
 		encoder := json.NewEncoder(file)
