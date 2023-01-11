@@ -2,20 +2,22 @@ package main
 
 import (
 	"os"
-	"path/filepath"
 )
 
 func main() {
-	path, err := os.UserHomeDir()
+	path, err := os.Getwd()
 	if err == nil {
-		path = filepath.Join(path, "MyApp", "MyTempFile.json")
+		dirEntries, err := os.ReadDir(path)
+		if err == nil {
+			for _, dentry := range dirEntries {
+				Printfln("Entry name: %v, IsDir: %v", dentry.Name(), dentry.IsDir())
+			}
+		}
 	}
-	Printfln("Full path: %v", path)
-	Printfln("Volume name: %v", filepath.VolumeName(path))
-	Printfln("Dir component: %v", filepath.Dir(path))
-	Printfln("File component: %v", filepath.Base(path))
-	Printfln("File extension: %v", filepath.Ext(path))
+	if err != nil {
+		Printfln("Error %v", err.Error())
+	}
 }
 
 //Raitfolt
-//yQ2MBs2haxNe2X8
+//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
