@@ -2,21 +2,23 @@ package main
 
 import (
 	"os"
+	"path/filepath"
 )
 
 func main() {
-	targetFiles := []string{"no_such_file.txt", "config.json"}
-	for _, name := range targetFiles {
-		info, err := os.Stat(name)
-		if os.IsNotExist(err) {
-			Printfln("File does not exist: %v", name)
-		} else if err != nil {
-			Printfln("Other error: %v", err.Error())
-		} else {
-			Printfln("File %v, Size: %v", info.Name(), info.Size())
+	path, err := os.Getwd()
+	if err == nil {
+		matches, err := filepath.Glob(filepath.Join(path, "*.json"))
+		if err == nil {
+			for _, m := range matches {
+				Printfln("Match: %v", m)
+			}
 		}
+	}
+	if err != nil {
+		Printfln("Error %v", err.Error())
 	}
 }
 
 //Raitfolt
-//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
+//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
