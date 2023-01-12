@@ -7,8 +7,7 @@
 {{ define "expensiveProduct" -}}
     Expensive Product: {{ .Name }} ({{- template "currency" .Price }})
 {{- end }}
-
-
+{{ define "mainTemplate" }}
     <h1>There are {{ len . }} products in the source data.</h1>
     <h1>First product: {{ index . 0 }}</h1>
     {{ range . -}}
@@ -20,3 +19,4 @@
             <h1>Midrange Product: {{ .Name }} ({{ printf "$%.2f" .Price}})</h1>
         {{ end -}}
     {{ end }}
+    {{- end}}
