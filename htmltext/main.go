@@ -1,9 +1,10 @@
 package main
 
 import (
-	"html/template"
+	//"html/template"
 	"os"
 	"strings"
+	"text/template"
 )
 
 func GetCategories(products []Product) (categories []string) {
@@ -18,7 +19,11 @@ func GetCategories(products []Product) (categories []string) {
 }
 
 func Exec(t *template.Template) error {
-	return t.Execute(os.Stdout, Products)
+	productMap := map[string]Product{}
+	for _, p := range Products {
+		productMap[p.Name] = p
+	}
+	return t.Execute(os.Stdout, &productMap)
 }
 
 func main() {
@@ -27,7 +32,7 @@ func main() {
 		"getCats": GetCategories,
 		"lower":   strings.ToLower,
 	})
-	allTemplates, err := allTemplates.ParseGlob("templates/*.html")
+	allTemplates, err := allTemplates.ParseGlob("templates/*.txt")
 	if err == nil {
 		selectedTemplated := allTemplates.Lookup("mainTemplate")
 		err = Exec(selectedTemplated)
