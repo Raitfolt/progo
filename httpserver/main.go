@@ -11,9 +11,15 @@ type StringHandler struct {
 
 func (sh StringHandler) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
 	if request.URL.Path == "/favicon.ico" {
-		Printfln("Request for icon detected - returning 404")
-		writer.WriteHeader(http.StatusNotFound)
-		return
+		Printfln("Request for %v", request.URL.Path)
+		switch request.URL.Path {
+		case "/favicon.ico":
+			http.NotFound(writer, request)
+		case "/message":
+			io.WriteString(writer, sh.message)
+		default:
+			http.Redirect(writer, request, "/message", http.StatusTemporaryRedirect)
+		}
 	}
 	Printfln("Request for %v", request.URL.Path)
 	io.WriteString(writer, sh.message)
