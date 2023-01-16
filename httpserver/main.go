@@ -3,6 +3,7 @@ package main
 import (
 	"io"
 	"net/http"
+	"strings"
 )
 
 type StringHandler struct {
@@ -12,6 +13,15 @@ type StringHandler struct {
 func (sh StringHandler) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
 	Printfln("Request for %v", request.URL.Path)
 	io.WriteString(writer, sh.message)
+}
+
+func HTTPSRedirect(writer http.ResponseWriter, request *http.Request) {
+	host := strings.Split(request.Host, ":")[0]
+	target := "https://" + host + ":5500" + request.URL.Path
+	if len(request.URL.RawQuery) > 0 {
+		target += "?" + request.URL.RawQuery
+	}
+	http.Redirect(writer, request, target, http.StatusTemporaryRedirect)
 }
 
 func main() {
@@ -26,7 +36,7 @@ func main() {
 		}
 	}()
 
-	err := http.ListenAndServe(":5000", nil)
+	err := http.ListenAndServe(":5000", http.HandlerFunc(HTTPSRedirect))
 	if err != nil {
 		Printfln("Error: %v", err.Error())
 	}
