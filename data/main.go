@@ -46,13 +46,24 @@ func insertRow(db *sql.DB, p *Product) (id int64) {
 	return
 }
 
+func insertAndUseCategory(name string, productIDs ...int) {
+	result, err := insertNewCategory.Exec(name)
+	if err == nil {
+		newID, _ := result.LastInsertId()
+		for _, id := range productIDs {
+			changeProductCategory.Exec(int(newID), id)
+		}
+	} else {
+		Printfln("Prepared statement error: %v", err)
+	}
+}
+
 func main() {
 	db, err := openDatabase()
 	if err == nil {
-		newProduct := Product{Name: "Stadium", Category: Category{Id: 2}, Price: 79500}
-		newID := insertRow(db, &newProduct)
-		p := queryDatabase(db, int(newID))
-		Printfln("New Product: %v", p)
+		insertAndUseCategory("Misc Products", 2)
+		p := queryDatabase(db, 2)
+		Printfln("Product: %v", p)
 		db.Close()
 	} else {
 		panic(err)
