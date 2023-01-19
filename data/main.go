@@ -9,8 +9,13 @@ func queryDatabase(db *sql.DB) {
 			var id, category int
 			var name string
 			var price float64
-			rows.Scan(&id, &name, &category, &price)
-			Printfln("Row: %v %v %v %v", id, name, category, price)
+			scanErr := rows.Scan(&id, &name, &category, &price)
+			if scanErr == nil {
+				Printfln("Row: %v %v %v %v", id, name, category, price)
+			} else {
+				Printfln("Scan error: %v", scanErr)
+				break
+			}
 		}
 	} else {
 		Printfln("Error: %v", err)
