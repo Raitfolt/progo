@@ -6,9 +6,9 @@ func queryDatabase(db *sql.DB) {
 	rows, err := db.Query("SELECT * from Products")
 	if err == nil {
 		for rows.Next() {
-			var id, category int
+			var id, category string
 			var name string
-			var price float64
+			var price string
 			scanErr := rows.Scan(&id, &name, &category, &price)
 			if scanErr == nil {
 				Printfln("Row: %v %v %v %v", id, name, category, price)
