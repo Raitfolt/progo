@@ -2,16 +2,29 @@ package main
 
 import "database/sql"
 
-func queryDatabase(db *sql.DB) {
-	rows, err := db.Query("SELECT * from Products")
+type Category struct {
+	Id   int
+	Name string
+}
+
+type Product struct {
+	Id   int
+	Name string
+	Category
+	Price float64
+}
+
+func queryDatabase(db *sql.DB) []Product {
+	products := []Product{}
+	rows, err := db.Query(`SELECT Products.Id, Products.Name, Products.Price,
+		Categories.Id as Cat_Id, Categories.Name as CatName from Products, Categories
+		WHERE Products.Category = Categories.Id`)
 	if err == nil {
 		for rows.Next() {
-			var id, category string
-			var name string
-			var price string
-			scanErr := rows.Scan(&id, &name, &category, &price)
+			p := Product{}
+			scanErr := rows.Scan(&p.Id, &p.Name, &p.Price, &p.Category.Id, &p.Category.Name)
 			if scanErr == nil {
-				Printfln("Row: %v %v %v %v", id, name, category, price)
+				products = append(products, p)
 			} else {
 				Printfln("Scan error: %v", scanErr)
 				break
@@ -20,13 +33,16 @@ func queryDatabase(db *sql.DB) {
 	} else {
 		Printfln("Error: %v", err)
 	}
+	return products
 }
 
 func main() {
-	listDrivers()
 	db, err := openDatabase()
 	if err == nil {
-		queryDatabase(db)
+		products := queryDatabase(db)
+		for i, p := range products {
+			Printfln("#%v: %v", i, p)
+		}
 		db.Close()
 	} else {
 		panic(err)
