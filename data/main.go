@@ -14,11 +14,12 @@ type Product struct {
 	Price float64
 }
 
-func queryDatabase(db *sql.DB) []Product {
+func queryDatabase(db *sql.DB, categoryName string) []Product {
 	products := []Product{}
 	rows, err := db.Query(`SELECT Products.Id, Products.Name, Products.Price,
 		Categories.Id as Cat_Id, Categories.Name as CatName from Products, Categories
-		WHERE Products.Category = Categories.Id`)
+		WHERE Products.Category = Categories.Id 
+		AND Categories.Name = ?`, categoryName)
 	if err == nil {
 		for rows.Next() {
 			p := Product{}
@@ -39,9 +40,12 @@ func queryDatabase(db *sql.DB) []Product {
 func main() {
 	db, err := openDatabase()
 	if err == nil {
-		products := queryDatabase(db)
-		for i, p := range products {
-			Printfln("#%v: %v", i, p)
+		for _, cat := range []string{"Soccer", "Watersports"} {
+			Printfln("--- %v Results ---", cat)
+			products := queryDatabase(db, cat)
+			for i, p := range products {
+				Printfln("#%v: %v %v %v", i, p.Name, p.Category.Name, p.Price)
+			}
 		}
 		db.Close()
 	} else {
