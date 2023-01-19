@@ -31,13 +31,28 @@ func queryDatabase(db *sql.DB, id int) (p Product) {
 	return
 }
 
+func insertRow(db *sql.DB, p *Product) (id int64) {
+	res, err := db.Exec(`
+	INSERT INTO Products (Name, Category, Price)
+	VALUES (?, ?, ?)`, p.Name, p.Category.Id, p.Price)
+	if err == nil {
+		id, err = res.LastInsertId()
+		if err != nil {
+			Printfln("Result error: %v", err.Error())
+		}
+	} else {
+		Printfln("Exec error: %v", err.Error())
+	}
+	return
+}
+
 func main() {
 	db, err := openDatabase()
 	if err == nil {
-		for _, id := range []int{1, 3, 10} {
-			p := queryDatabase(db, id)
-			Printfln("Product: %v", p)
-		}
+		newProduct := Product{Name: "Stadium", Category: Category{Id: 2}, Price: 79500}
+		newID := insertRow(db, &newProduct)
+		p := queryDatabase(db, int(newID))
+		Printfln("New Product: %v", p)
 		db.Close()
 	} else {
 		panic(err)
