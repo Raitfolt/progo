@@ -1,9 +1,7 @@
 package main
 
 import (
-	"fmt"
 	"reflect"
-	"strings"
 )
 
 func getTypePath(t reflect.Type) (path string) {
@@ -16,19 +14,9 @@ func getTypePath(t reflect.Type) (path string) {
 
 func printDetails(values ...interface{}) {
 	for _, elem := range values {
-		fieldDetails := []string{}
 		elemType := reflect.TypeOf(elem)
-		elemValue := reflect.ValueOf(elem)
-		if elemType.Kind() == reflect.Struct {
-			for i := 0; i < elemType.NumField(); i++ {
-				fieldName := elemType.Field(i).Name
-				fieldVal := elemValue.Field(i)
-				fieldDetails = append(fieldDetails, fmt.Sprintf("%v: %v", fieldName, fieldVal))
-			}
-			Printfln("%v: %v", elemType.Name(), strings.Join(fieldDetails, ", "))
-		} else {
-			Printfln("%v: %v", elemType.Name(), elemValue)
-		}
+		Printfln("Name: %v, PkgPath: %v, Kind: %v",
+			elemType.Name(), getTypePath(elemType), elemType.Kind())
 	}
 }
 
