@@ -90,7 +90,7 @@ func setAll(src interface{}, targets ...interface{}) {
 	}
 }
 
-func contains(slice interface{}, target interface{}) (found bool) {
+func containsOld(slice interface{}, target interface{}) (found bool) {
 	sliceVal := reflect.ValueOf(slice)
 	targetType := reflect.TypeOf(target)
 	if sliceVal.Kind() == reflect.Slice &&
@@ -98,6 +98,18 @@ func contains(slice interface{}, target interface{}) (found bool) {
 		targetType.Comparable() {
 		for i := 0; i < sliceVal.Len(); i++ {
 			if sliceVal.Index(i).Interface() == target {
+				found = true
+			}
+		}
+	}
+	return
+}
+
+func contains(slice interface{}, target interface{}) (found bool) {
+	sliceVal := reflect.ValueOf(slice)
+	if sliceVal.Kind() == reflect.Slice {
+		for i := 0; i < sliceVal.Len(); i++ {
+			if reflect.DeepEqual(sliceVal.Index(i).Interface(), target) {
 				found = true
 			}
 		}
