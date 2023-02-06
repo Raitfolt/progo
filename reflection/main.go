@@ -1,8 +1,8 @@
 package main
 
 import (
-	"fmt"
 	"reflect"
+	"strings"
 )
 
 func setMap(m interface{}, key interface{}, val interface{}) {
@@ -27,26 +27,31 @@ func removeFromMap(m interface{}, key interface{}) {
 	}
 }
 
+func createMap(slice interface{}, op func(interface{}) interface{}) interface{} {
+	sliceVal := reflect.ValueOf(slice)
+	if sliceVal.Kind() == reflect.Slice {
+		mapType := reflect.MapOf(sliceVal.Type().Elem(), sliceVal.Type().Elem())
+		mapVal := reflect.MakeMap(mapType)
+		for i := 0; i < sliceVal.Len(); i++ {
+			elemVal := sliceVal.Index(i)
+			mapVal.SetMapIndex(elemVal, reflect.ValueOf(op(elemVal.Interface())))
+		}
+		return mapVal.Interface()
+	}
+	return nil
+}
+
 func main() {
-	pricesMap := map[string]float64{
-		"Kayak": 279, "Lifejacket": 48.95, "Soccer Ball": 19.50,
+	names := []string{"Alice", "Bob", "Chrlie"}
+	reverse := func(val interface{}) interface{} {
+		if str, ok := val.(string); ok {
+			return strings.ToUpper(str)
+		}
+		return val
 	}
-	for k, v := range pricesMap {
-		Printfln("Key: %v, Value: %v", k, v)
-	}
-	fmt.Println()
-	setMap(pricesMap, "Kayak", 100.00)
-	for k, v := range pricesMap {
-		Printfln("Key: %v, Value: %v", k, v)
-	}
-	fmt.Println()
-	setMap(pricesMap, "Hat", 10.00)
-	for k, v := range pricesMap {
-		Printfln("Key: %v, Value: %v", k, v)
-	}
-	fmt.Println()
-	removeFromMap(pricesMap, "Lifejacket")
-	for k, v := range pricesMap {
+
+	namesMap := createMap(names, reverse).(map[string]string)
+	for k, v := range namesMap {
 		Printfln("Key: %v, Value: %v", k, v)
 	}
 }
