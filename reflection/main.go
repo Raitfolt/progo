@@ -2,24 +2,25 @@ package main
 
 import (
 	"reflect"
-	"strings"
 )
 
-var stringPtrType = reflect.TypeOf((*string)(nil))
-
-func transformString(val interface{}) {
-	elemValue := reflect.ValueOf(val)
-	if elemValue.Type() == stringPtrType {
-		upperStr := strings.ToUpper(elemValue.Elem().String())
-		if elemValue.Elem().CanSet() {
-			elemValue.Elem().SetString(upperStr)
-		}
-	}
+func checkElemType(val interface{}, arrOrSlice interface{}) bool {
+	elemType := reflect.TypeOf(val)
+	arrOrSliceType := reflect.TypeOf(arrOrSlice)
+	return (arrOrSliceType.Kind() == reflect.Array ||
+		arrOrSliceType.Kind() == reflect.Slice) &&
+		arrOrSliceType.Elem() == elemType
 }
 
 func main() {
 	name := "Alice"
+	city := "London"
+	hobby := "Running"
 
-	transformString(&name)
-	Printfln("Follow pointer value: %v", name)
+	slice := []string{name, city, hobby}
+	array := [3]string{name, city, hobby}
+
+	Printfln("Slice (string): %v", checkElemType("testString", slice))
+	Printfln("Array (string): %v", checkElemType("testString", array))
+	Printfln("Array (int): %v", checkElemType(10, array))
 }
