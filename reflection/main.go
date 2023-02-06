@@ -4,30 +4,23 @@ import (
 	"reflect"
 )
 
-func swap(first interface{}, second interface{}) {
-	firstValue, secondValue := reflect.ValueOf(first), reflect.ValueOf(second)
-	if firstValue.Type() == secondValue.Type() &&
-		firstValue.Kind() == reflect.Ptr &&
-		firstValue.Elem().CanSet() &&
-		secondValue.Elem().CanSet() {
-		tmp := reflect.New(firstValue.Elem().Type())
-		tmp.Elem().Set(firstValue.Elem())
-		firstValue.Elem().Set(secondValue.Elem())
-		secondValue.Elem().Set(tmp.Elem())
+func createPointerType(t reflect.Type) reflect.Type {
+	return reflect.PtrTo(t)
+}
+
+func followPointerType(t reflect.Type) reflect.Type {
+	if t.Kind() == reflect.Ptr {
+		return t.Elem()
 	}
+	return t
 }
 
 func main() {
 	name := "Alice"
-	price := 279
-	city := "London"
 
-	for _, val := range []interface{}{name, price, city} {
-		Printfln("Old value: %v", val)
-	}
-	swap(&name, &city)
-	for _, val := range []interface{}{name, price, city} {
-		Printfln("Value: %v", val)
-	}
-
+	t := reflect.TypeOf(name)
+	Printfln("Original Type: %v", t)
+	pt := createPointerType(t)
+	Printfln("Pointer Type: %v", pt)
+	Printfln("Follow pointer type: %v", followPointerType(pt))
 }
