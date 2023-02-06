@@ -4,17 +4,16 @@ import (
 	"reflect"
 )
 
-func findAndSplit(slice interface{}, target interface{}) interface{} {
+func pickValues(slice interface{}, indices ...int) interface{} {
 	sliceVal := reflect.ValueOf(slice)
-	targetType := reflect.TypeOf(target)
-	if sliceVal.Kind() == reflect.Slice && sliceVal.Type().Elem() == targetType {
-		for i := 0; i < sliceVal.Len(); i++ {
-			if sliceVal.Index(i).Interface() == target {
-				return sliceVal.Slice(0, i+1)
-			}
+	if sliceVal.Kind() == reflect.Slice {
+		newSlice := reflect.MakeSlice(sliceVal.Type(), 0, 10)
+		for _, index := range indices {
+			newSlice = reflect.Append(newSlice, sliceVal.Index(index))
 		}
+		return newSlice
 	}
-	return slice
+	return nil
 }
 
 func main() {
@@ -22,9 +21,7 @@ func main() {
 	city := "London"
 	hobby := "Running"
 
-	slice := []string{name, city, hobby}
-	Printfln("Strings: %v", findAndSplit(slice, "London"))
-
-	numbers := []int{1, 3, 5, 7, 9}
-	Printfln("Numbers: %v", findAndSplit(numbers, 4))
+	slice := []string{name, city, hobby, "Bob", "Paris", "Soccer"}
+	picked := pickValues(slice, 0, 3, 5)
+	Printfln("Picked values: %v", picked)
 }
