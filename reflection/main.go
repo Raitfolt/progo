@@ -5,36 +5,25 @@ import (
 	"reflect"
 )
 
-func describeMap(m interface{}) {
-	mapType := reflect.TypeOf(m)
-	if mapType.Kind() == reflect.Map {
-		Printfln("Key type: %v, Value type: %v", mapType.Key(), mapType.Elem())
+func setMap(m interface{}, key interface{}, val interface{}) {
+	mapValue := reflect.ValueOf(m)
+	keyValue := reflect.ValueOf(key)
+	valValue := reflect.ValueOf(val)
+	if mapValue.Kind() == reflect.Map &&
+		mapValue.Type().Key() == keyValue.Type() &&
+		mapValue.Type().Elem() == valValue.Type() {
+		mapValue.SetMapIndex(keyValue, valValue)
 	} else {
-		Printfln("Not a map")
+		Printfln("Not a map or mosmatched types")
 	}
 }
 
-func printMapContents(m interface{}) {
+func removeFromMap(m interface{}, key interface{}) {
 	mapValue := reflect.ValueOf(m)
-	if mapValue.Kind() == reflect.Map {
-		for _, keyVal := range mapValue.MapKeys() {
-			reflectedVal := mapValue.MapIndex(keyVal)
-			Printfln("Map Key: %v, Value: %v", keyVal, reflectedVal)
-		}
-	} else {
-		Printfln("Not a map")
-	}
-}
-
-func printMapContents2(m interface{}) {
-	mapValue := reflect.ValueOf(m)
-	if mapValue.Kind() == reflect.Map {
-		iter := mapValue.MapRange()
-		for iter.Next() {
-			Printfln("Map Key: %v, Value: %v", iter.Key(), iter.Value())
-		}
-	} else {
-		Printfln("Not a map")
+	keyValue := reflect.ValueOf(key)
+	if mapValue.Kind() == reflect.Map &&
+		mapValue.Type().Key() == keyValue.Type() {
+		mapValue.SetMapIndex(keyValue, reflect.Value{})
 	}
 }
 
@@ -42,9 +31,22 @@ func main() {
 	pricesMap := map[string]float64{
 		"Kayak": 279, "Lifejacket": 48.95, "Soccer Ball": 19.50,
 	}
-	describeMap(pricesMap)
+	for k, v := range pricesMap {
+		Printfln("Key: %v, Value: %v", k, v)
+	}
 	fmt.Println()
-	printMapContents(pricesMap)
+	setMap(pricesMap, "Kayak", 100.00)
+	for k, v := range pricesMap {
+		Printfln("Key: %v, Value: %v", k, v)
+	}
 	fmt.Println()
-	printMapContents2(pricesMap)
+	setMap(pricesMap, "Hat", 10.00)
+	for k, v := range pricesMap {
+		Printfln("Key: %v, Value: %v", k, v)
+	}
+	fmt.Println()
+	removeFromMap(pricesMap, "Lifejacket")
+	for k, v := range pricesMap {
+		Printfln("Key: %v, Value: %v", k, v)
+	}
 }
