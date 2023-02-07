@@ -4,26 +4,22 @@ import (
 	"reflect"
 )
 
-func inspectTags(s interface{}, tagName string) {
-	structType := reflect.TypeOf(s)
-	for i := 0; i < structType.NumField(); i++ {
-		field := structType.Field(i)
-		tag := field.Tag
-		valGet := tag.Get(tagName)
-		valLookup, ok := tag.Lookup(tagName)
-		Printfln("Field: %v, Tag %v: %v", field.Name, tagName, valGet)
-		Printfln("Field: %v, Tag %v: %v, Set: %v", field.Name, tagName, valLookup, ok)
+func getFieldValues(s interface{}) {
+	structValue := reflect.ValueOf(s)
+	if structValue.Kind() == reflect.Struct {
+		for i := 0; i < structValue.NumField(); i++ {
+			fieldType := structValue.Type().Field(i)
+			fieldVal := structValue.Field(i)
+			Printfln("Name: %v, Type: %v, Value: %v", fieldType.Name, fieldType.Type, fieldVal)
+		}
+	} else {
+		Printfln("Not a struct")
 	}
 }
 
 func main() {
-	stringType := reflect.TypeOf("string")
-
-	structType := reflect.StructOf([]reflect.StructField{
-		{Name: "Name", Type: stringType, Tag: `alias:"id"`},
-		{Name: "City", Type: stringType, Tag: `alias:""`},
-		{Name: "Country", Type: stringType},
-	})
-
-	inspectTags(reflect.New(structType), "alias")
+	product := Product{Name: "Kayak", Category: "Watersports", Price: 279}
+	customer := Customer{Name: "Acme", City: "Chicago"}
+	purchase := Purchase{Customer: customer, Product: product, Total: 279, taxRate: 10}
+	getFieldValues(purchase)
 }
