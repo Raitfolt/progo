@@ -9,14 +9,22 @@ func mapSlice(slice interface{}, mapper interface{}) (mapped []interface{}) {
 	sliceVal := reflect.ValueOf(slice)
 	mapperVal := reflect.ValueOf(mapper)
 	mapped = []interface{}{}
-	if sliceVal.Kind() == reflect.Slice && mapperVal.Kind() == reflect.Func &&
-		mapperVal.Type().NumIn() == 1 &&
-		mapperVal.Type().In(0) == sliceVal.Type().Elem() {
-		for i := 0; i < sliceVal.Len(); i++ {
-			result := mapperVal.Call([]reflect.Value{sliceVal.Index(i)})
-			for _, r := range result {
-				mapped = append(mapped, r.Interface())
+	if sliceVal.Kind() == reflect.Slice && mapperVal.Kind() == reflect.Func {
+		paramTypes := []reflect.Type{sliceVal.Type().Elem()}
+		resultTypes := []reflect.Type{}
+		for i := 0; i < mapperVal.Type().NumOut(); i++ {
+			resultTypes = append(resultTypes, mapperVal.Type().Out(i))
+		}
+		expectedFuncType := reflect.FuncOf(paramTypes, resultTypes, mapperVal.Type().IsVariadic())
+		if mapperVal.Type() == expectedFuncType {
+			for i := 0; i < sliceVal.Len(); i++ {
+				result := mapperVal.Call([]reflect.Value{sliceVal.Index(i)})
+				for _, r := range result {
+					mapped = append(mapped, r.Interface())
+				}
 			}
+		} else {
+			Printfln("Function type not as expected")
 		}
 	}
 	return
