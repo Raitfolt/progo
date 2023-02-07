@@ -4,50 +4,26 @@ import (
 	"reflect"
 )
 
-func getFieldValues(s interface{}) {
-	structValue := reflect.ValueOf(s)
-	if structValue.Kind() == reflect.Struct {
-		for i := 0; i < structValue.NumField(); i++ {
-			fieldType := structValue.Type().Field(i)
-			fieldVal := structValue.Field(i)
-			Printfln("Name: %v, Type: %v, Value: %v", fieldType.Name, fieldType.Type, fieldVal)
-		}
-	} else {
-		Printfln("Not a struct")
-	}
-}
-
-func setFieldValue(s interface{}, newVals map[string]interface{}) {
-	structValue := reflect.ValueOf(s)
-	if structValue.Kind() == reflect.Ptr && structValue.Elem().Kind() == reflect.Struct {
-		for name, newValue := range newVals {
-			fieldVal := structValue.Elem().FieldByName(name)
-			if fieldVal.CanSet() {
-				fieldVal.Set(reflect.ValueOf(newValue))
-			} else if fieldVal.CanAddr() {
-				ptr := fieldVal.Addr()
-				if ptr.CanSet() {
-					ptr.Set(reflect.ValueOf(newValue))
-				} else {
-					Printfln("Cannot set field via pointer")
-				}
+func inspectFuncType(f interface{}) {
+	funcType := reflect.TypeOf(f)
+	if funcType.Kind() == reflect.Func {
+		Printfln("Function parameters: %v", funcType.NumIn())
+		for i := 0; i < funcType.NumIn(); i++ {
+			paramType := funcType.In(i)
+			if i < funcType.NumIn()-1 {
+				Printfln("Parameter #%v, Type: %v", i, paramType)
 			} else {
-				Printfln("Cannot set field")
+				Printfln("Parameter #%v, Type: %v, Variadic: %v", i, paramType, funcType.IsVariadic())
 			}
 		}
-	} else {
-		Printfln("Not a pointer to a struct")
+		Printfln("Function results: %v", funcType.NumOut())
+		for i := 0; i < funcType.NumOut(); i++ {
+			resultType := funcType.Out(i)
+			Printfln("Result #%v, Type: %v", i, resultType)
+		}
 	}
 }
 
 func main() {
-	product := Product{Name: "Kayak", Category: "Watersports", Price: 279}
-	customer := Customer{Name: "Acme", City: "Chicago"}
-	purchase := Purchase{Customer: customer, Product: product, Total: 279, taxRate: 10}
-
-	setFieldValue(&purchase, map[string]interface{}{
-		"City": "London", "Category": "Boats", "Total": 100.50,
-	})
-
-	getFieldValues(purchase)
+	inspectFuncType(Find)
 }
