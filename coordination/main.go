@@ -1,43 +1,38 @@
 package main
 
 import (
-	"math"
-	"math/rand"
+	"context"
 	"sync"
 	"time"
 )
 
-var waitGroup = sync.WaitGroup{}
-
-var once = sync.Once{}
-
-var squares = map[int]int{}
-
-func generateSquares(max int) {
-
-	Printfln("Generating data...")
-	for val := 0; val < max; val++ {
-		squares[val] = int(math.Pow(float64(val), 2))
+func processRequest(ctx context.Context, wg *sync.WaitGroup, count int) {
+	total := 0
+	for i := 0; i < count; i++ {
+		select {
+		case <-ctx.Done():
+			Printfln("Stop processing - request cancelled")
+			goto end
+		default:
+			Printfln("Processing request: %v", total)
+			total++
+			time.Sleep(time.Millisecond * 250)
+		}
 	}
-}
-
-func readSquares(id, max, iteration int) {
-	once.Do(func() { generateSquares(max) })
-
-	for i := 0; i < iteration; i++ {
-		key := rand.Intn(max)
-		Printfln("#%v Read value: %v = %v", id, key, squares[key])
-		time.Sleep(time.Millisecond * 100)
-	}
-	waitGroup.Done()
+	Printfln("Request processed...%v", total)
+end:
+	wg.Done()
 }
 
 func main() {
-	numRoutines := 5
-	waitGroup.Add(numRoutines)
-	for i := 0; i < numRoutines; i++ {
-		go readSquares(i, 10, 5)
-	}
+	waitGroup := sync.WaitGroup{}
+	waitGroup.Add(1)
+	Printfln("Request dispatched...")
+	ctx, cancel := context.WithCancel(context.Background())
+	go processRequest(ctx, &waitGroup, 10)
+	time.Sleep(time.Second)
+	Printfln("Canceling request")
+	cancel()
+
 	waitGroup.Wait()
-	Printfln("Cached values: %v", len(squares))
 }
