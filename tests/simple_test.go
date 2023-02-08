@@ -6,12 +6,27 @@ import (
 	"testing"
 )
 
+type SumTest struct {
+	testValues     []int
+	expextedResult int
+}
+
 func TestSum(t *testing.T) {
-	testValues := []int{10, 20, 30}
-	_, sum := sortAndTotal(testValues)
-	expected := 60
-	if sum != expected {
-		t.Fatalf("Expected %v, Got %v", expected, sum)
+	testVals := []SumTest{
+		{testValues: []int{10, 20, 30}, expextedResult: 10},
+		{testValues: []int{-10, 0, -10}, expextedResult: -20},
+		{testValues: []int{-10, 0, -10}, expextedResult: -20},
+	}
+	for index, testVal := range testVals {
+		t.Run(fmt.Sprintf("Sum #%v", index), func(subT *testing.T) {
+			if t.Failed() {
+				subT.SkipNow()
+			}
+			_, sum := sortAndTotal(testVal.testValues)
+			if sum != testVal.expextedResult {
+				subT.Fatalf("Expected %v, Got %v", testVal.expextedResult, sum)
+			}
+		})
 	}
 }
 
