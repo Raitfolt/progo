@@ -21,7 +21,7 @@ func addService(life lifecycle, factoryFunc interface{}) (err error) {
 			lifecycle:   life,
 		}
 	} else {
-		err = fmt.Errorf("Type cannot be used as service: %v", factoryFuncType)
+		err = fmt.Errorf("type cannot be used as service: %v", factoryFuncType)
 
 	}
 	return
@@ -41,7 +41,7 @@ func resolveServiceFromValue(c context.Context, val reflect.Value) (err error) {
 			val.Elem().Set(invokeFunction(c, binding.factoryFunc)[0])
 		}
 	} else {
-		err = fmt.Errorf("Cannot find service %v", serviceType)
+		err = fmt.Errorf("cannot find service %v", serviceType)
 	}
 	return
 }

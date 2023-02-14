@@ -1,9 +1,9 @@
 {
-    "logging": {
+    "logging" : {
         "level": "debug"
     },
-    "main": {
-        "message": "Hello from config file"
+    "main" : {
+        "message" : "Hello from the config file"
     },
     "files": {
         "path": "placeholder/files"

@@ -7,6 +7,7 @@ import (
 )
 
 func RegisterDefaultServices() {
+
 	err := AddSingleton(func() (c config.Configuration) {
 		c, loadErr := config.Load("config.json")
 		if loadErr != nil {

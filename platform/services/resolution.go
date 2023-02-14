@@ -16,7 +16,7 @@ func GetServiceForContext(c context.Context, target interface{}) (err error) {
 		targetValue.Elem().CanSet() {
 		err = resolveServiceFromValue(c, targetValue)
 	} else {
-		err = errors.New("Type cannot be used as taget")
+		err = errors.New("Type cannot be used as target")
 	}
 	return
 }
